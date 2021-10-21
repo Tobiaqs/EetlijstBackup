@@ -6,5 +6,8 @@ services:
             context: ./src
         restart: unless-stopped
         working_dir: /app
+        environment:
+            - EETLIJST_USERNAME
+            - EETLIJST_PASSWORD
         volumes:
             - ./backups:/app/backups

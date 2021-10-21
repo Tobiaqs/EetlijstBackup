@@ -1,5 +1,6 @@
 import schedule, os, requests, time
 from urllib import request, parse
+from datetime import datetime
 
 EETLIJST_USERNAME = os.environ['EETLIJST_USERNAME']
 EETLIJST_PASSWORD = os.environ['EETLIJST_PASSWORD']
@@ -13,15 +14,26 @@ def get_session_id():
     return request.urlopen(req).geturl().split('=')[1]
 
 def create_backup():
+    # Download new
     session_id = get_session_id()
     url = f'http://eetlijst.nl/kosten2xls.php?session_id={session_id}'
     r = requests.get(url)
-    filename = r.headers['Content-Disposition'][21:-1]
+    filename = datetime.now().isoformat()[0:-10].replace('T', '_') + '.xls'
     with open(f'backups/{filename}', 'wb') as f:
         f.write(r.content)
+        print(f'Downloaded {filename}')
+    
+    # Cleanup
+    files_to_delete = sorted(os.listdir('backups'))[0:-96]
 
+    for file in files_to_delete:
+        os.remove(file)
+        print(f'Removed {file}')
+
+create_backup()
 
 schedule.every().hour.do(create_backup)
+
 
 while True:
     schedule.run_pending()
