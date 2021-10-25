@@ -27,7 +27,7 @@ def create_backup():
     files_to_delete = sorted(os.listdir('backups'))[0:-96]
 
     for file in files_to_delete:
-        os.remove(file)
+        os.remove(f'backups/{file}')
         print(f'Removed {file}')
 
 create_backup()
