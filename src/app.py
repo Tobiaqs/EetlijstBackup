@@ -19,6 +19,11 @@ def create_backup():
     url = f'http://eetlijst.nl/kosten2xls.php?session_id={session_id}'
     r = requests.get(url)
     filename = datetime.now().isoformat()[0:-10].replace('T', '_') + '.xls'
+    if len(r.content) < 75000:
+        print(f'Backup {filename} failed, received only {len(r.content)} bytes. Skipping cleanup.')
+        return
+    
+    # Write backup
     with open(f'backups/{filename}', 'wb') as f:
         f.write(r.content)
         print(f'Downloaded {filename}')
